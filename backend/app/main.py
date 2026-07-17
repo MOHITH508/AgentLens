@@ -1,23 +1,26 @@
 from fastapi import FastAPI
 
+from app.api.v1.router import api_router
+from app.core.config import settings
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+
 app = FastAPI(
-    title="AgentLens API",
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
     description="AI Reliability & Evaluation Platform",
-    version="0.1.0",
 )
 
+app.include_router(api_router, prefix="/api/v1")
 
-@app.get("/")
+
+@app.get("/", tags=["Root"])
 async def root():
-    return {
-        "project": "AgentLens",
-        "version": "0.1.0",
-        "status": "running"
-    }
+    logger.info("Root endpoint accessed")
 
-
-@app.get("/health")
-async def health():
     return {
-        "status": "healthy"
+        "project": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "status": "running",
     }
