@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import DateTime, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
@@ -19,6 +19,18 @@ class Project(Base):
     description: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
+    )
+
+    agents = relationship(
+        "Agent",
+        back_populates="project",
+        cascade="all, delete",
+    )
+
+    prompts = relationship(
+        "Prompt",
+        back_populates="project",
+        cascade="all, delete",
     )
 
     created_at: Mapped[datetime] = mapped_column(

@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
 from app.database.session import get_db
-from app.schemas.project import ProjectCreate, ProjectResponse
+from app.schemas.project import (
+    ProjectCreate,
+    ProjectResponse,
+    ProjectUpdate,
+)
 from app.services.project_service import (
     create_project,
     get_projects,
     get_project,
     delete_project,
+    update_project,
 )
 
 router = APIRouter(
@@ -43,3 +48,19 @@ def delete(project_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Project not found")
 
     return {"message": "Project deleted successfully"}
+
+@router.put("/{project_id}", response_model=ProjectResponse)
+def update(
+    project_id: int,
+    project: ProjectUpdate,
+    db: Session = Depends(get_db),
+):
+    updated = update_project(db, project_id, project)
+
+    if updated is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    return updated
